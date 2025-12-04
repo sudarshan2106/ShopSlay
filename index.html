@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slay Screens | Gen-Z Movie Booking</title>
+    <link rel="stylesheet" href="css/style.css?v=3">
+    <link rel="stylesheet" href="css/glassmorphism.css?v=3">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass navbar">
+        <div class="logo glow-text">SLAY SCREENS</div>
+        <div class="search-bar glass-card">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search for movies, events, sports...">
+        </div>
+        <div class="nav-links">
+            <a href="#" class="active">Movies</a>
+            <a href="stream.html">Stream</a>
+            <a href="events.html">Events</a>
+            <a href="sports.html">Sports</a>
+        </div>
+
+        <!-- User Profile / Sign In Button -->
+        <div id="userSection">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Hero Slider -->
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="glow-text">Experience the <br> <span style="color: var(--neon-pink);">Unreal</span></h1>
+            <p>Book the latest blockbusters in 4DX, IMAX, and ScreenX.</p>
+            <button class="neon-btn neon-btn-primary" onclick="handleBookNow()">Book Now</button>
+        </div>
+        <div class="hero-slider">
+            <!-- Placeholder for slider images -->
+            <div class="slide glass-card active">
+                <img src="https://image.tmdb.org/t/p/w500/1E5baAaEse26fej7uHcjOgEE2t2.jpg" alt="Movie 1">
+            </div>
+        </div>
+    </header>
+
+    <!-- Floating Admin Registration Button -->
+    <button class="floating-admin-btn" onclick="registerAsAdmin()" title="Register as Admin">
+        <i class="fas fa-user-shield"></i>
+    </button>
+
+
+    <!-- Trending Movies -->
+    <section class="section-container">
+        <h2 class="section-title">Trending <span style="color: var(--neon-blue);">Now</span></h2>
+        <div class="movie-grid" id="movie-grid">
+            <!-- Movies will be loaded dynamically via JS -->
+        </div>
+    </section>
+
+    <style>
+        /* Inline styles for layout specific to index */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            width: 40%;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: white;
+            margin-left: 10px;
+            width: 100%;
+            outline: none;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--neon-pink);
+        }
+
+        /* User Profile Dropdown */
+        .user-profile {
+            position: relative;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(176, 38, 255, 0.2);
+            border: 1px solid var(--neon-purple);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-btn:hover {
+            background: rgba(176, 38, 255, 0.3);
+            box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--neon-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            width: 250px;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(176, 38, 255, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            display: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .profile-info {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .profile-info h4 {
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .profile-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .profile-menu {
+            list-style: none;
+        }
+
+        .profile-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-menu a,
+        .profile-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: white;
+            text-align: left;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .profile-menu a:hover,
+        .profile-menu button:hover {
+            background: rgba(176, 38, 255, 0.2);
+        }
+
+        .profile-menu i {
+            color: var(--neon-purple);
+        }
+
+        .hero-section {
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10%;
+            background: radial-gradient(circle at top right, rgba(176, 38, 255, 0.2), transparent 40%);
+            margin-top: 60px;
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-slider {
+            width: 400px;
+            height: 550px;
+            position: relative;
+        }
+
+        .hero-slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .section-container {
+            padding: 4rem 10%;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Floating Admin Button */
+        .floating-admin-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(176, 38, 255, 0.3);
+            border: 2px solid var(--neon-purple);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 999;
+            box-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+
+        .floating-admin-btn:hover {
+            background: rgba(176, 38, 255, 0.5);
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.8);
+            transform: scale(1.1);
+        }
+    </style>
+
+    <script src="js/auth.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserSection();
+            renderMovies();
+        });
+
+        // Update user section based on login status
+        function updateUserSection() {
+            const userSection = document.getElementById('userSection');
+
+            if (window.auth && window.auth.isLoggedIn()) {
+                const user = window.auth.getCurrentUser();
+                const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+                userSection.innerHTML = `
+                    <div class="user-profile">
+                        <div class="profile-btn" onclick="toggleProfileDropdown()">
+                            <div class="profile-avatar">${initials}</div>
+                            <span>${user.name.split(' ')[0]}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-info">
+                                <h4>${user.name}</h4>
+                                <p>${user.email}</p>
+                            </div>
+                            <ul class="profile-menu">
+                                <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+                                <li><a href="bookings.html"><i class="fas fa-ticket-alt"></i> My Bookings</a></li>
+                                ${user.role === 'ADMIN' ? '<li><a href="admin/dashboard.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>' : ''}
+                                <li><button onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else {
+                userSection.innerHTML = '<button class="neon-btn neon-btn-primary" onclick="handleSignIn()">Sign In</button>';
+            }
+        }
+
+        // Toggle profile dropdown
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const dropdown = document.getElementById('profileDropdown');
+            const profileBtn = document.querySelector('.profile-btn');
+
+            if (dropdown && !profileBtn?.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Register as admin function
+        function registerAsAdmin() {
+            window.location.href = 'register.html?role=admin';
+        }
+
+        // Render movies dynamically
+        function renderMovies() {
+            const movieGrid = document.getElementById('movie-grid');
+            if (!movieGrid || !window.movies) return;
+
+            movieGrid.innerHTML = window.movies.map(movie => `
+                <div class="glass-card movie-card" onclick="selectMovie(${movie.id})">
+                    <div class="poster">
+                        <img src="${movie.poster}" alt="${movie.title}">
+                        <div class="overlay">
+                            <button class="neon-btn neon-btn-primary">
+                                <i class="fas fa-ticket-alt"></i> Book Now
+                            </button>
+                        </div>
+                    </div>
+                    <div class="info">
+                        <h3>${movie.title}</h3>
+                        <div class="meta">
+                            <span>${movie.genre}</span>
+                            <span class="rating"><i class="fas fa-star"></i> ${movie.rating}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>
